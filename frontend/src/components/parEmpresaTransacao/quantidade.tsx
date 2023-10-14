@@ -35,29 +35,27 @@ export default function ParEstoqueQuantidade() {
   
       try {
         const response = await Axios.get(
-          `http://localhost:3001/GETEstabelecimentoEstoqueByUsuarioID/${usuarioJson.UsuarioID}`
+          `http://localhost:3001/GETListaParceiroEstoque/${usuarioJson.UsuarioID}`
         );
-  
-        const estabelecimentoEstoqueArray = JSON.parse(response.data.EstabelecimentoEstoque);
-            sessionStorage.setItem('estabelecimentoEstoque',JSON.stringify(estabelecimentoEstoqueArray)) 
+        const ParceiroEstoqueArray = JSON.parse(response.data.ParceiroEstoque);
             
-        if (Array.isArray(estabelecimentoEstoqueArray)) {
-          estabelecimentoEstoqueArray.forEach((estabelecimentoEstoque) => {
-            const tipoOleo = estabelecimentoEstoque.estabelecimentoestoquetipo;
-            const estabelecimentoEstoqueProdutoQuantidade = estabelecimentoEstoque.estabelecimentoestoqueprodutoquantidade;
-          
-            console.log('DENTRO DO FOR: ', tipoOleo, estabelecimentoEstoqueProdutoQuantidade);
+        console.log(ParceiroEstoqueArray);
+        
+        if (Array.isArray(ParceiroEstoqueArray)) {
+          ParceiroEstoqueArray.forEach((ParceiroEstoque) => {
+            const tipoOleo = ParceiroEstoque.parceiroEstoqueTipo;
+            const parceiroestoqueProdutoQuantidade = ParceiroEstoque.parceiroEstoqueProdutoQuantidade;
           
             if (tipoOleo === 'limpo') {
-              setQuantidadeLimpo(estabelecimentoEstoqueProdutoQuantidade);
+              setQuantidadeLimpo(parceiroestoqueProdutoQuantidade);
             }
           
             if (tipoOleo === 'usado') {
-              setQuantidadeUsado(estabelecimentoEstoqueProdutoQuantidade);
+              setQuantidadeUsado(parceiroestoqueProdutoQuantidade);
             }
           });
         } else {
-          console.log('EstabelecimentoEstoque não é um array ou está vazio.');
+          console.log('parceiro não é um array ou está vazio.');
         }
       } catch (error) {
         console.log(error);

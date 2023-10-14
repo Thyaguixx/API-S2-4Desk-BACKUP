@@ -39,7 +39,7 @@ export default function EstEstoqueQuantidade() {
         );
   
         const estabelecimentoEstoqueArray = JSON.parse(response.data.EstabelecimentoEstoque);
-            sessionStorage.setItem('estabelecimentoEstoque',JSON.stringify(estabelecimentoEstoqueArray)) 
+            // sessionStorage.setItem('estabelecimentoEstoque',JSON.stringify(estabelecimentoEstoqueArray)) 
             
         if (Array.isArray(estabelecimentoEstoqueArray)) {
           estabelecimentoEstoqueArray.forEach((estabelecimentoEstoque) => {

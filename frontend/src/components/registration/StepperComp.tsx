@@ -230,7 +230,7 @@ export default function StepperComp() {
               MyToast.fire({
                 icon: "success",
                 title: response.data.msg,
-              }).then(() => navigate("/par-saldo"));
+              }).then(() => navigate("/parceiro-saldo"));
             } else if (!response.data.Sucesso) {
               MyToast.fire({
                 icon: "error",

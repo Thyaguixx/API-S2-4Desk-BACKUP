@@ -271,7 +271,7 @@ export default function ParTransacao() {
               >
                 <ListItem disablePadding>
                   <ListItemText inset primary="Selecione o tipo de óleo e quantidade:" />
-                  {/* <h3>{quantidadeEstoque}</h3> */}
+                  <h3>{quantidadeEstoque}</h3>
                 </ListItem>
               </List>
 

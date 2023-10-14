@@ -15,12 +15,14 @@ import { GETEstabelecimentoEstoqueByUsuarioID } from "../Procedures/GETs/GETEsta
 import { processarEstoque } from "../Procedures/POSTs/POSTEstabelecimentoEstoque";
 import { GETEstabelecimentoByNomeFantasia } from "../Procedures/GETs/GETEstabelecimentoByNomeFantasia";
 import { POSTEstabelecimentoEmpresa } from "../Procedures/POSTs/POSTEstabelecimentoEmpresa";
+import { POSTParceiroEmpresa } from "../Procedures/POSTs/POSTHistoricoParceiroEmpresa";
+import { GETListaParceiroEstoque } from "../Procedures/GETs/GETListaParceiroEstoque";
 
 const client = new Pool({
     user: "postgres",
     host: "localhost",
     database: "API - 4Desk",    //trocar para o nome do seu banco local
-    password: "thygas020",      //trocar para a senha do seu banco local
+    password: "123",      //trocar para a senha do seu banco local
     port: 5432
 })
 
@@ -212,12 +214,11 @@ app.get("/GETEstabelecimentoEstoqueByUsuarioID/:usuarioID", async (req, res) => 
 })
 
 app.post("/POSTEstabelecimentoEstoque", async (req, res) => {
-    const { estabelecimentoEstoqueJson } = req.body
     const { EstabelecimentoEstoque } = req.body
     const { usuarioID } = req.body
 
 
-    const returnPOST = await processarEstoque(client, estabelecimentoEstoqueJson, usuarioID, EstabelecimentoEstoque)
+    const returnPOST = await processarEstoque(client, usuarioID, EstabelecimentoEstoque)
     res.send({ isSucesso: returnPOST })
 })
 
@@ -233,6 +234,34 @@ app.post("/POSTEstabelecimentoEmpresa", async (req, res) => {
     
     
 })
+
+
+app.get("/GETListaParceiroEstoque/:usuarioID", async (req, res) => {
+    const { usuarioID } = req.params
+
+    const retornoParceiroEstoque = await GETListaParceiroEstoque(client, usuarioID)
+    if (retornoParceiroEstoque) {
+        res.send({ ParceiroEstoque: retornoParceiroEstoque?.retornoEstabEstoqueJSON, msg: retornoParceiroEstoque.isSucesso ? "Sucesso" : "Deu ruim."})
+    } else {
+        console.log('Nenhum estoque encontrado.');
+    }
+})
+
+app.post("/POSTParceiroEmpresa", async (req, res) => {
+
+    const { empresanome } = req.body
+    const { usuarioID } = req.body
+    const { ParceiroEstoqueTipo } = req.body
+    const { HistoricoParceiroEmpresa } = req.body
+    
+    const returnPOST = await POSTParceiroEmpresa(client, usuarioID, ParceiroEstoqueTipo, empresanome.label, HistoricoParceiroEmpresa)
+    res.send({isSucesso:returnPOST.isSuccess, msg: returnPOST.message })
+    if(!returnPOST.isSuccess){
+        console.log('ERRO POSTParceiroEmpresa: '+returnPOST.message);
+    }
+
+})
+
 
 app.listen(3001, () => {
     console.log("Servidor rodando!")

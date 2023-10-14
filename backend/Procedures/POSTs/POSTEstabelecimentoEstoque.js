@@ -1,6 +1,8 @@
+import { GETEstabelecimentoEstoqueByUsuarioID } from '../GETs/GETEstabelecimentoEstoqueByUsuarioID';
+
 const { Client } = require('pg');
 
-export async function processarEstoque(client, estabelecimentoEstoqueJson, usuarioID, estabelecimentoEstoqueDBJson) {
+export async function processarEstoque(client, usuarioID, estabelecimentoEstoqueDBJson) {
   let LocalERRO = 'GETEstabelecimento';
   let isSucesso = true;  // Adicionada a variável isSucesso
 
@@ -8,6 +10,12 @@ export async function processarEstoque(client, estabelecimentoEstoqueJson, usuar
     await client.connect();
 
     let estabelecimentoEstoque = [];
+    const estabelecimentoEstoqueJson = ''
+    
+    await GETEstabelecimentoEstoqueByUsuarioID(client, usuarioID).then(estoque => {
+     estabelecimentoEstoqueJson = JSON.stringify(estoque)
+  })
+  .catch(error => console.error('Erro ao obter o estoque:', error));
 
     if (estabelecimentoEstoqueJson) {
       estabelecimentoEstoque = JSON.parse(estabelecimentoEstoqueJson);
@@ -84,7 +92,6 @@ export async function processarEstoque(client, estabelecimentoEstoqueJson, usuar
     console.error('Erro ao processar o estoque:', error + LocalERRO);
     isSucesso = false;
   }
-
   return { isSucesso };
 }
 
