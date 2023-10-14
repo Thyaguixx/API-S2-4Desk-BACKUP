@@ -1,22 +1,28 @@
+import { SETParceiroEstoque } from '../SETs/SETParceiroEstoque';
+
 const { Client } = require('pg');
 
-export async function realizarTransacaoEstabelecimentoParceiro(client, UsuarioID, EstabelecimentoEstoqueID, transacaoEstabelecimentoParceiro) {
+export async function realizarTransacaoEstabelecimentoParceiro(client, UsuarioID, EstabelecimentoID, EstabelecimentoEstoqueID, transacaoEstabelecimentoParceiro) {
   try {
+
+    let isSucesso = false
+
     // Obter o ParceiroID usando o UsuarioID
     const parceiroQuery = {
       text: 'SELECT ParceiroID FROM Parceiro WHERE UsuarioID = $1',
       values: [UsuarioID],
     };
+
     const parceiroResult = await client.query(parceiroQuery);
-    const ParceiroID = parceiroResult.rows[0].ParceiroID;
+    const parceiroID = parceiroResult.rows[0].parceiroid;
 
     // Obter o EstabelecimentoID usando o EstabelecimentoEstoqueID
-    const estabelecimentoQuery = {
-      text: 'SELECT EstabelecimentoID FROM Estabelecimento WHERE EstabelecimentoEstoqueID = $1',
-      values: [EstabelecimentoEstoqueID],
-    };
-    const estabelecimentoResult = await client.query(estabelecimentoQuery);
-    const EstabelecimentoID = estabelecimentoResult.rows[0].EstabelecimentoID;
+    // const estabelecimentoQuery = {
+    //   text: 'SELECT EstabelecimentoID FROM Estabelecimento WHERE EstabelecimentoID = $1',
+    //   values: [EstabelecimentoID],
+    // };
+    // const estabelecimentoResult = await client.query(estabelecimentoQuery);
+    // const EstabelecimentoID = estabelecimentoResult.rows[0].estabelecimentoid;
 
     // Iniciar uma transação no banco de dados
     await client.query('BEGIN');
@@ -25,9 +31,9 @@ export async function realizarTransacaoEstabelecimentoParceiro(client, UsuarioID
     const transacaoQuery = {
       text: `
         INSERT INTO TransacaoEstabelecimentoParceiro (
-          TransacaoEstabelecimentoParceiroID,
           ParceiroID,
           EstabelecimentoEstoqueID,
+          TransacaoEstabelecimentoParceiroData,
           EstabelecimentoEstoqueProdutoDescricao,
           EstabelecimentoEstoqueTipo,
           EstabelecimentoEstoqueProdutoQuantidade,
@@ -36,9 +42,9 @@ export async function realizarTransacaoEstabelecimentoParceiro(client, UsuarioID
         VALUES ($1, $2, $3, $4, $5, $6, $7)
       `,
       values: [
-        transacaoEstabelecimentoParceiro.TransacaoEstabelecimentoParceiroID,
-        ParceiroID,
+        parceiroID,
         EstabelecimentoEstoqueID,
+        transacaoEstabelecimentoParceiro.TransacaoEstabelecimentoParceiroData,
         transacaoEstabelecimentoParceiro.EstabelecimentoEstoqueProdutoDescricao,
         transacaoEstabelecimentoParceiro.EstabelecimentoEstoqueTipo,
         transacaoEstabelecimentoParceiro.EstabelecimentoEstoqueProdutoQuantidade,
@@ -56,9 +62,10 @@ export async function realizarTransacaoEstabelecimentoParceiro(client, UsuarioID
       `,
       values: [
         transacaoEstabelecimentoParceiro.ParceiroCreditoQuantidade,
-        ParceiroID,
+        parceiroID,
       ],
     };
+
     await client.query(updateParceiroQuery);
 
     // Atualizar a quantidade de estoque no Estabelecimento
@@ -87,21 +94,32 @@ export async function realizarTransacaoEstabelecimentoParceiro(client, UsuarioID
         EstabelecimentoID,
       ],
     };
+
     await client.query(updateCreditoEstabelecimentoQuery);
 
-    // Commit da transação
-    await client.query('COMMIT');
+    const parceiroEstoque = {
+      ParceiroID: parceiroID,
+      ParceiroEstoqueProdutoDescricao: transacaoEstabelecimentoParceiro.EstabelecimentoEstoqueProdutoDescricao,
+      ParceiroEstoqueTipo: transacaoEstabelecimentoParceiro.EstabelecimentoEstoqueTipo,
+      ParceiroEstoqueProdutoQuantidade: transacaoEstabelecimentoParceiro.EstabelecimentoEstoqueProdutoQuantidade
+    }
 
+    await client.query('COMMIT');
     console.log('Transação realizada com sucesso.');
+
+    const retorno = await SETParceiroEstoque(client, parceiroEstoque)
+    isSucesso = retorno.isSucesso
+
+    return { isSucesso, mensagem: isSucesso ? 'Transação realizada com sucesso.' : 'Erro ao realizar a transação.' };
   } catch (error) {
     // Rollback em caso de erro
     await client.query('ROLLBACK');
     console.error('Erro ao realizar a transação:', error);
-  } finally {
-    // Fechar a conexão com o banco de dados
-    await client.end();
-    return { isSucesso, mensagem: isSucesso ? 'Transação realizada com sucesso.' : 'Erro ao realizar a transação.' };
-  }
+   } //finally {
+  //   // Fechar a conexão com o banco de dados
+  //   // await client.end();
+  //   return { isSucesso, mensagem: isSucesso ? 'Transação realizada com sucesso.' : 'Erro ao realizar a transação.' };
+  // }
 }
 
 // Exemplo de uso

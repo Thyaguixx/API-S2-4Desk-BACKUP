@@ -14,12 +14,13 @@ import { GETListaEstabelecimento } from "../Procedures/GETs/GETListaEstabelecime
 import { GETEstabelecimentoEstoqueByUsuarioID } from "../Procedures/GETs/GETEstabelecimentoEstoqueByUsuarioID";
 import { processarEstoque } from "../Procedures/POSTs/POSTEstabelecimentoEstoque";
 import { GETEstabelecimentoByNomeFantasia } from "../Procedures/GETs/GETEstabelecimentoByNomeFantasia";
+import { POSTEstabelecimentoEmpresa } from "../Procedures/POSTs/POSTEstabelecimentoEmpresa";
 
 const client = new Pool({
     user: "postgres",
     host: "localhost",
     database: "API - 4Desk",    //trocar para o nome do seu banco local
-    password: "123",      //trocar para a senha do seu banco local
+    password: "thygas020",      //trocar para a senha do seu banco local
     port: 5432
 })
 
@@ -64,16 +65,13 @@ app.post("/login", async (req, res) => {
     } else {
         res.send({ msg: resultadoLogin.messages, usuario: resultadoLogin.usuarioReturn, isSucesso: resultadoLogin.isSucesso })
     }
-
-
 })
 
 app.post("/cadastro-parceiro", async (req, res) => {
     const { usuario } = req.body
     const { parceiro } = req.body
-    
+
     const resultado = await POSTCadastroParceiro(client, usuario, parceiro)
-    console.log(resultado?.isSucesso)
 
     if (resultado?.isSucesso) {
         res.send({ msg: "Usuário cadastrado com sucesso.", Sucesso: resultado.isSucesso, id: resultado.id, Usuario: resultado.usuarioReturn })
@@ -87,7 +85,6 @@ app.post("/cadastro-estabelecimento", async (req, res) => {
     const { estabelecimento } = req.body
 
     const resultado = await POSTCadastroEstabelecimento(client, usuario, estabelecimento)
-    console.log(resultado?.isSucesso)
 
     if (resultado?.isSucesso) {
         res.send({ msg: "Usuário cadastrado com sucesso.", Sucesso: resultado.isSucesso, id: resultado.id, Usuario: resultado.retonoUsuario })
@@ -118,9 +115,9 @@ app.post("/verifica-usuario", async (req, res) => {
     const emailValido = await VerificaUserEmail(client, email)
 
     if (emailValido) {
-        res.send({msg: "Email já existente"})
+        res.send({ msg: "Email já existente" })
     } else {
-        res.send({msg: "Email válido para cadastro"})
+        res.send({ msg: "Email válido para cadastro" })
     }
 
 })
@@ -131,9 +128,9 @@ app.get("/recupera-credito-parceiro/:usuarioID", async (req, res) => {
     const retorno = await GETParceiro(client, usuarioID)
 
     if (retorno?.isSucesso) {
-        res.send({Sucesso: retorno.isSucesso, ParceiroCredito: retorno.retornoParceiro.ParceiroCreditoQuantidade})
+        res.send({ Sucesso: retorno.isSucesso, ParceiroCredito: retorno.retornoParceiro.ParceiroCreditoQuantidade })
     } else {
-        res.send({msg: "Deu ruim"})
+        res.send({ msg: "Deu ruim" })
     }
 })
 
@@ -143,93 +140,98 @@ app.get("/recupera-credito-estabelecimento/:usuarioID", async (req, res) => {
     const retorno = await GETEstabelecimento(client, usuarioID)
 
     if (retorno?.isSucesso) {
-        res.send({Sucesso: retorno.isSucesso, EstabCredito: retorno.retornoEstab.EstabelecimentoCreditoQuantidade})
+        res.send({ Sucesso: retorno.isSucesso, EstabCredito: retorno.retornoEstab.EstabelecimentoCreditoQuantidade })
     } else {
-        res.send({msg: "Deu ruim"})
+        res.send({ msg: "Deu ruim" })
     }
 })
 
 app.get("/GETEstabelecimentoByNomeFantasia/:nomeFantasia", async (req, res) => {
     const { nomeFantasia } = req.params
 
-   const retorno = await GETEstabelecimentoByNomeFantasia(client, nomeFantasia)
+    const retorno = await GETEstabelecimentoByNomeFantasia(client, nomeFantasia)
 
     if (retorno?.isSucesso) {
-        res.send({Sucesso: retorno.isSucesso, Estabelecimento: retorno.retornoEstab})
+        res.send({ Sucesso: retorno.isSucesso, Estabelecimento: retorno.retornoEstab })
     } else {
-        res.send({msg: "Deu ruim"})
+        res.send({ msg: "Deu ruim" })
     }
 })
 
 app.post("/POSTTransacaoParceiroEstabelecimento", async (req, res) => {
     const { transacaoEstabelecimentoParceiro } = req.body
-
-    // const transacaoEstabelecimentoParceiro = {
-    //     TransacaoEstabelecimentoParceiroID: req.body,
-    //     EstabelecimentoEstoqueID: req.body,
-    //     EstabelecimentoEstoqueProdutoDescricao: req.body,
-    //     EstabelecimentoEstoqueTipo: req.body,
-    //     EstabelecimentoEstoqueProdutoQuantidade: req.body,
-    //     ParceiroCreditoQuantidade: req.body,
-    // };
-    
+    const { EstabelecimentoID } = req.body
     const { EstabelecimentoEstoqueID } = req.body
     const { UsuarioID } = req.body
 
-    const returnTRN = await realizarTransacaoEstabelecimentoParceiro(client, UsuarioID, EstabelecimentoEstoqueID, transacaoEstabelecimentoParceiro)
+    const returnTRN = await realizarTransacaoEstabelecimentoParceiro(client, UsuarioID, EstabelecimentoID, EstabelecimentoEstoqueID, transacaoEstabelecimentoParceiro)
 
     if (returnTRN?.isSucesso) {
         res.send({ Sucesso: returnTRN.isSucesso, msg: returnTRN.mensagem })
     }
 })
 
-app.get("/GETEstabelecimentoEstoquePorTipo", async (req, res)=>{
-    const EstabelecimentoID = req.body
-    const EstoqueTipo = req.body
+app.get("/GETEstabelecimentoEstoquePorTipo/:estabelecimentoID/:estoqueTipo", async (req, res) => {
+    const { estabelecimentoID } = req.params
+    const { estoqueTipo } = req.params
 
-    const estabelecimentoEstoque = await GETEstabelecimentoEstoquePorTipo(client, EstabelecimentoID, EstoqueTipo)
-    if(estabelecimentoEstoque){
-        res.send({estabelecimentoEstoque: estabelecimentoEstoque, msg:"Sucesso"})
+    const retornoEstabEstoque = await GETEstabelecimentoEstoquePorTipo(client, estabelecimentoID, estoqueTipo)
+
+    if (retornoEstabEstoque) {
+        res.send({ EstabelecimentoEstoque: retornoEstabEstoque?.retornoEstabEstoque, msg: retornoEstabEstoque.isSucesso ? "Sucesso" : "Deu ruim."})
+    } else {
+        console.log('Nenhum estoque encontrado.');
     }
 })
 
-app.get("/recupera-estabelecimentos", async (req, res)=>{
+app.get("/recupera-estabelecimentos", async (req, res) => {
 
     const resultEstabelecimentos = await GETListaEstabelecimento(client)
 
     if (resultEstabelecimentos.isSucesso) {
-      console.log('Estabelecimentos encontrados:');
-      res.send({Estabelecimentos: resultEstabelecimentos.retornoEstabs});
+        res.send({ Estabelecimentos: resultEstabelecimentos.retornoEstabs });
     } else {
-      console.log('Nenhum estabelecimento encontrado.');
+        console.log('Nenhum estabelecimento encontrado.');
     }
 
 })
 
-app.get("/GETEstabelecimentoEstoqueByUsuarioID/:usuarioID", async (req, res)=>{
+app.get("/GETEstabelecimentoEstoqueByUsuarioID/:usuarioID", async (req, res) => {
 
     const { usuarioID } = req.params
 
-    GETEstabelecimentoEstoqueByUsuarioID(client,usuarioID)
-    
-      .then(estoque =>{
-        
-        var EstabelecimentoEstoque = JSON.stringify(estoque)
-        console.log('TESTEEEEEEE   '+EstabelecimentoEstoque)
+    GETEstabelecimentoEstoqueByUsuarioID(client, usuarioID)
 
-        res.send({msg:'GET com sucesso', EstabelecimentoEstoque:EstabelecimentoEstoque})
-      } )
-      .catch(error => console.error('Erro ao obter o estoque:', error));
+        .then(estoque => {
+
+            var EstabelecimentoEstoque = JSON.stringify(estoque)
+
+            res.send({ msg: 'GET com sucesso', EstabelecimentoEstoque: EstabelecimentoEstoque })
+        })
+        .catch(error => console.error('Erro ao obter o estoque:', error));
 })
 
 app.post("/POSTEstabelecimentoEstoque", async (req, res) => {
-    const {estabelecimentoEstoqueJson} = req.body
-    const {EstabelecimentoEstoque} = req.body
-    const {usuarioID} = req.body
+    const { estabelecimentoEstoqueJson } = req.body
+    const { EstabelecimentoEstoque } = req.body
+    const { usuarioID } = req.body
 
 
-    const returnPOST = await processarEstoque(client,estabelecimentoEstoqueJson,usuarioID,EstabelecimentoEstoque)
-    res.send({isSucesso:returnPOST })
+    const returnPOST = await processarEstoque(client, estabelecimentoEstoqueJson, usuarioID, EstabelecimentoEstoque)
+    res.send({ isSucesso: returnPOST })
+})
+
+app.post("/POSTEstabelecimentoEmpresa", async (req, res) => {
+
+    const { empresanome } = req.body
+    const { usuarioID } = req.body
+    const { transacaoEstabelecimentoEmpresa } = req.body
+
+    // await POSTEstabelecimentoEmpresa(client, empresaID, usuarioID, transacaoEstabelecimentoEmpresa)
+    const returnPOST = await POSTEstabelecimentoEmpresa(client, empresanome.label, usuarioID, transacaoEstabelecimentoEmpresa)
+    res.send({isSucesso:returnPOST.IsSucesso, msgErro: returnPOST.mensagensErro, msgSucesso: returnPOST.mensagensSucesso })
+    
+    
 })
 
 app.listen(3001, () => {

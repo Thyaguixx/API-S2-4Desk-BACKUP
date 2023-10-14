@@ -33,7 +33,7 @@ import logo4D from "../images/logo4D.png";
 
 const settings = ["Perfil", "Sair"];
 
-function EstLeftMenuCerto() {
+function EstLeftMenu() {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [userName, setUserName] = useState("");
@@ -165,12 +165,7 @@ function EstLeftMenuCerto() {
   );
 
   const deslogar = () => {
-    sessionStorage.removeItem("dados_step_1")
-    sessionStorage.removeItem("dados_step_2")
-    sessionStorage.removeItem("dados_step_3")
-    sessionStorage.removeItem("UsuarioLogado")
-    sessionStorage.removeItem("TokenValidaEmail")
-
+    sessionStorage.clear()
     navigate('/')
   }
 
@@ -204,7 +199,7 @@ function EstLeftMenuCerto() {
               GREENEAT
             </Typography>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontFamily: 'actor'}}>
-              acesso como estabelecimento
+              Acessado como: Estabelecimento
             </Typography>
             <Typography
               variant="body1"
@@ -298,4 +293,4 @@ function EstLeftMenuCerto() {
   );
 }
 
-export default EstLeftMenuCerto;
+export default EstLeftMenu;

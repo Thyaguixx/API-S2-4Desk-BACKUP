@@ -8,6 +8,7 @@ import { BrowserRouter } from "react-router-dom";
 import EstoqueEstabelecimento from "../pages/estEstoque";
 import Erro404 from "../pages/erro404";
 import EstoqueParceiro from "../pages/parEstoque";
+import ParEmpresaTransacao from "../pages/parEmpresaTransacao";
 
 export const Rotas = () => {
   return (
@@ -19,6 +20,7 @@ export const Rotas = () => {
         <Route path="/registration" element={<Registration />} />
         <Route path="/estabelecimento-estoque" element={<EstoqueEstabelecimento />}/>
         <Route path="/parceiro-estoque" element={<EstoqueParceiro />}/>
+	<Route path="/parceiro-empresa-transacao" element={<ParEmpresaTransacao />}/>
         <Route path="*" element={<Erro404 />} />
 
       </Routes>

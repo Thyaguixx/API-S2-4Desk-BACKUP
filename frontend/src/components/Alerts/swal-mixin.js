@@ -9,5 +9,6 @@ export const MyToast = Swal.mixin({
   didOpen: (toast) => {
     toast.addEventListener('mouseenter', Swal.stopTimer)
     toast.addEventListener('mouseleave', Swal.resumeTimer)
+    toast.style.zIndex = '4000000000';
   }
 })

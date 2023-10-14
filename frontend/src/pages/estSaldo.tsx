@@ -6,7 +6,7 @@ import EstSaldoComponent from "../components/estSaldo/EstSaldoComponent";
 import EstSaldoBotao from "../components/estSaldo/EstSaldoBotao";
 import { ThemeProvider } from "styled-components";
 import { createTheme } from "@mui/material";
-import EstLeftMenuCerto from "../components/reusable/EstLeftMenu";
+import EstLeftMenu from "../components/reusable/EstLeftMenu";
 // import EstTransacao from '../components/estSaldo/EstTransacao';
 // import EstExtrato from '../components/estSaldo/EstExtrato';
 
@@ -24,7 +24,7 @@ function Estabelecimento() {
   return (
     <div className="App">
       <ThemeProvider theme={theme}>
-        <EstLeftMenuCerto />
+        <EstLeftMenu />
         <Footer />
         <EstSaldoBotao />
         <EstSaldoComponent />

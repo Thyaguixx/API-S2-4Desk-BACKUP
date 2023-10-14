@@ -258,7 +258,7 @@ export default function StepperComp() {
               MyToast.fire({
                 icon: "success",
                 title: response.data.msg,
-              }).then(() => navigate("/estabelecimento"));
+              }).then(() => navigate("/estabelecimento-saldo"));
             } else if (!response.data.Sucesso) {
               MyToast.fire({
                 icon: "error",

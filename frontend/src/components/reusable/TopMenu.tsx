@@ -90,11 +90,11 @@ export default function TopMenu2() {
           // })
 
           if (response.data.usuario.UsuarioTipo === "Parceiro") {
-            navigate("/par-saldo");
+            navigate("/parceiro-saldo");
             await window.location.reload();
           }
           if (response.data.usuario.UsuarioTipo === "Estabelecimento") {
-            navigate("/estabelecimento");
+            navigate("/estabelecimento-saldo");
             await window.location.reload();
           }
 
@@ -108,7 +108,7 @@ export default function TopMenu2() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="fixed" sx={{ top: 0, left: 0, right: 0 }}>
+      <AppBar position="fixed" sx={{ top: 0, left: 0, right: 0 , zIndex: 10}}>
         <Toolbar>
           <Avatar
             alt="Meu Ícone"

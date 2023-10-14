@@ -64,7 +64,6 @@ export default function EstEstoqueCadastro() {
 
 const usuarioLogadoJson: any = sessionStorage.getItem("UsuarioLogado")
 const usuarioJson = JSON.parse(usuarioLogadoJson);
-const [IsPossible, setIsPossible] = React.useState(false);
 
 const CadastrarEstoque = async () => {
 
@@ -72,6 +71,7 @@ const CadastrarEstoque = async () => {
   if(returnValidaCampos.IsSucesso){
   // Cria um array para armazenar os objetos EstabelecimentoEstoque
   const estabelecimentoEstoqueArray = [];
+console.log('estadoSelecionado:  '+estadoSelecionado);
 
   // Verifica se é óleo limpo e adiciona ao array
   if (estadoSelecionado === 'limpo') {
@@ -114,7 +114,6 @@ const CadastrarEstoque = async () => {
     EstabelecimentoEstoque: JSON.stringify(estabelecimentoEstoqueArray),
   }).then((response)=>{
     if(response.data.isSucesso = true){
-      setIsPossible(true)
       LimpaCampos()
       MyToast.fire({
         title:'Sucesso',
@@ -126,13 +125,10 @@ const CadastrarEstoque = async () => {
     }
   })
 }else{
-  setIsPossible(true)
   MyToast.fire({
     title:'Erro',
     icon: 'warning',
     text: returnValidaCampos.msg
-  }).then(()=>{
-    setIsPossible(false)
   })
 }
 };
@@ -215,7 +211,7 @@ const CadastrarEstoque = async () => {
           <Button variant="outlined" sx={{outlineColor: "#136935", color:'#136935',  width:isMobile ? "200px" : isTablet ? "300px" : '300px', height: '50px', ml:isMobile ? "0px" : isTablet ? "0px" :'20%', mt:'-5%'}}>limpar</Button>
         </Grid>
         <Grid item lg={5} md={5} sm={12} xs={12} sx={{fontSize: "18px", mt: '3%', fontFamily: 'actor'}}>
-        <Button variant="contained" disabled={IsPossible} onClick={CadastrarEstoque} sx={{backgroundColor: "#136935", width: isMobile ? "200px" : isTablet ? "300px" : '300px', height: '50px', ml:isMobile ? "0px" : isTablet ? "0px" :'23%', mt:isMobile ? "-50px" : isTablet ? "-50px" :'-5%', color: 'white' }}>Cadastrar óleo</Button>
+        <Button variant="contained" onClick={CadastrarEstoque} sx={{backgroundColor: "#136935", width: isMobile ? "200px" : isTablet ? "300px" : '300px', height: '50px', ml:isMobile ? "0px" : isTablet ? "0px" :'23%', mt:isMobile ? "-50px" : isTablet ? "-50px" :'-5%', color: 'white' }}>Cadastrar óleo</Button>
         </Grid>
       </Grid>
     </Box>

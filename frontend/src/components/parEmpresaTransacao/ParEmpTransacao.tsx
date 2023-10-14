@@ -19,7 +19,6 @@ import usado from "../images/usado.png";
 import { Autocomplete, Stack } from '@mui/material';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Axios from "axios"
-import { MyToast } from "../Alerts/swal-mixin";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -31,12 +30,12 @@ const Item = styled(Paper)(({ theme }) => ({
 
 
 
-export default function ParTransacao() {
+export default function ParEmpTransacao() {
   // const [estabelecimentos, setEstabelecimentos] = useState([]);
   const [selectedButton, setSelectedButton] = React.useState("Transação");
   const [estabelecimentos, setEstabelecimentos] = React.useState<{ EstabelecimentoNomeFantasia: string }[]>([]);
   const [selectedEstabelecimento, setSelectedEstabelecimento] = React.useState("");
-  const [quantidadeEstoque, setQuantidadeEstoque] = React.useState(0)
+
 
   const handleButtonClick = (buttonName: React.SetStateAction<string>) => {
     setSelectedButton(buttonName);
@@ -82,6 +81,7 @@ export default function ParTransacao() {
     if (resultado.data.Estabelecimento) {
       const estabelecimento = resultado.data.Estabelecimento
       sessionStorage.setItem('EstabelecimentoID', estabelecimento.EstabelecimentoID)
+      console.log(estabelecimento.EstabelecimentoID)
     }
   }
 
@@ -91,74 +91,12 @@ export default function ParTransacao() {
       if (estabelecimentos.some(estabelecimento => estabelecimento.EstabelecimentoNomeFantasia === newValue)) {
         setSelectedEstabelecimento(newValue);
         montaObjEstabelecimento(newValue)
+      } else {
+        // Lidar com o caso em que o valor não está na lista de estabelecimentos
+        console.log("Estabelecimento não encontrado na lista");
       }
     }
   };
-
-  const recuperaEstabelecimentoEstoque = async () => {
-    const tipoOleo = sessionStorage.getItem('tipoOleo')
-    const estabelecimentoID = sessionStorage.getItem('EstabelecimentoID')
-
-    const result = await Axios.get(`http://localhost:3001/GETEstabelecimentoEstoquePorTipo/${estabelecimentoID}/${tipoOleo}`)
-
-    if (result.data.EstabelecimentoEstoque) {
-      const estabEstoque = result.data.EstabelecimentoEstoque
-      sessionStorage.setItem("estabEstoque", JSON.stringify(estabEstoque))
-      setQuantidadeEstoque(estabEstoque.EstabelecimentoEstoqueProdutoQuantidade)
-    }
-
-  }
-
-  const tranferirOleo = async () => {
-    const usuarioJson = sessionStorage.getItem("UsuarioLogado")
-    const estabEstoqueJSON = sessionStorage.getItem("estabEstoque")
-    const estabelecimentoID = sessionStorage.getItem("EstabelecimentoID")
-    const dataAtual = new Date().toLocaleString()
-
-    if (usuarioJson && estabEstoqueJSON && estabelecimentoID) {
-      const usuarioObj = JSON.parse(usuarioJson)
-      const estabEstoqueObj = JSON.parse(estabEstoqueJSON)
-      
-      const transacaoEstabelecimentoParceiro = {
-        TransacaoEstabelecimentoParceiroData: dataAtual,
-        EstabelecimentoEstoqueProdutoDescricao: estabEstoqueObj.EstabelecimentoEstoqueProdutoDescricao,
-        EstabelecimentoEstoqueTipo: estabEstoqueObj.EstabelecimentoEstoqueTipo,
-        EstabelecimentoEstoqueProdutoQuantidade: count1,
-        ParceiroCreditoQuantidade: count1
-      }
-
-      const resultado = await Axios.post("http://localhost:3001/POSTTransacaoParceiroEstabelecimento", {
-        EstabelecimentoID: estabelecimentoID,
-        EstabelecimentoEstoqueID: estabEstoqueObj.EstabelecimentoEstoqueID,
-        UsuarioID: usuarioObj.UsuarioID,
-        transacaoEstabelecimentoParceiro: transacaoEstabelecimentoParceiro
-      })
-
-      if (resultado.data.Sucesso) {
-        MyToast.fire({
-          icon: 'success',
-          title: resultado.data.msg,
-          // background: "#90ee90"
-        }).then(() => window.location.reload())
-      }
-
-      if (!resultado.data.Sucesso) {
-        MyToast.fire({
-          icon: 'error',
-          title: resultado.data.msg,
-          // background: "#90ee90"
-        })
-      }
-
-    } else {
-      MyToast.fire({
-        icon: 'warning',
-        title: 'Selecione um estabelecimento e o tipo de óleo que deseja transferir.',
-        // background: "#90ee90"
-      })
-    }
-
-  }
 
   return (
 
@@ -199,34 +137,91 @@ export default function ParTransacao() {
                       color: '#136935'
                     }} />
                   </ListItemIcon>
-                  <Typography variant="h5">Transferir Greenneats</Typography>
+                  <Typography variant="h5">Transferir Óleo</Typography>
                 </ListItem>
               </List>
 
               {/* SELECIONAR O ESTABELECIMENTO JÁ EXISTENTE*/}
-              <Autocomplete
+              <Autocomplete 
                 disablePortal
                 id="combo-box-demo"
                 options={estabelecimentos.map(estabelecimento => estabelecimento.EstabelecimentoNomeFantasia)}
                 value={selectedEstabelecimento}
                 onChange={handleEstabelecimentoChange}
                 sx={{ width: 900 }}
-                renderInput={(params) => <TextField {...params} label="Estabelecimento que deseja transferir" />}
+                renderInput={(params) => <TextField {...params} label="Empresa que deseja transferir" />}
               />
             </Grid>
-
-            {/* DEFINIÇÃO DE QUANTIDADE */}
+{/* DEFINIÇÃO DE LITROS */}
             <Grid item xs={6} md={5}>
+              {/* TEXTO */}
               <List
                 sx={{
                   marginLeft: '-12%'
-                }}>
+                }}
+              >
                 <ListItem disablePadding>
-                  <ListItemText inset primary="Defina a quantidade de greenneats:" />
+                  <ListItemText inset primary="Selecione o tipo de óleo e quantidade:" />
                 </ListItem>
               </List>
 
-              <div style={{ border: '1px solid #000', borderColor: 'grey', padding: '1px', borderRadius: '10px', width: '33%', height: '80px', marginLeft: '12%', marginTop: '3%' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                {/* Contêiner para os botões 'usado' e 'limpo' */}
+                <div id='containerBotoes' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '45%' }}>
+                  {/* BOTÃO ÓLEO LIMPO */}
+                  <div
+                    style={{
+                      marginLeft: '10%',
+                      width: '30%'
+                    }}>
+                    <Button
+                      sx={{
+                        height: '100px',
+                        borderRadius: '20px',
+                        backgroundColor: selectedGroup1 === 'limpo' ? '#YourSelectedColor' : 'transparent'
+                      }}
+                      variant="contained"
+                      onClick={() => {
+                        handleGroup1ButtonClick("limpo")
+                        sessionStorage.setItem('tipoOleo', 'Limpo')
+                      }}
+                    >
+                      <img src={limpo} alt="png" style={{ marginRight: 'auto', marginLeft: 'auto', width: '100%' }} />
+                    </Button>
+                    {/* TEXTO */}
+                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                      <div style={{ fontSize: '70%', marginLeft: '2%', marginTop: '5%' }}>limpo</div>
+                    </div>
+                  </div>
+
+                  {/* BOTÃO ÓLEO USADO */}
+                  <div
+                    style={{
+                      marginRight: '15%',
+                      width: '30%'
+                    }}>
+                    <Button
+                      sx={{
+                        height: '100px',
+                        borderRadius: '20px',
+                        backgroundColor: selectedGroup1 === 'usado' ? '#YourSelectedColor' : 'transparent'
+                      }}
+
+                      variant="contained"
+                      onClick={() => {
+                        handleGroup1ButtonClick("usado")
+                        sessionStorage.setItem('tipoOleo', 'Usado')
+                      }}
+                    >
+                      <img src={usado} alt="png" style={{ marginRight: 'auto', marginLeft: 'auto', width: '100%' }} />
+                    </Button>
+                    {/* TEXTO */}
+                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                      <div style={{ fontSize: '70%', marginLeft: '2%', marginTop: '5%' }}>usado</div>
+                    </div>
+                  </div>
+                </div>
+                <div style={{ border: '1px solid #000', borderColor: 'grey', padding: '1px', borderRadius: '10px', width: '33%', height: '80px', marginLeft: '12%', marginTop: '3%' }}>
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '6%' }}>
                   {/* BOTÃO - */}
                   <Button id='button1'
@@ -254,114 +249,7 @@ export default function ParTransacao() {
                   </Button>
                 </div>
 
-                {/* TEXTO */}
-                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                  <div style={{ fontSize: '70%', marginLeft: '2%' }}>greenneats</div>
-                </div>
-              </div>
-            </Grid>
-
-            {/* DEFINIÇÃO DE LITROS */}
-            <Grid item xs={6} md={5}>
-              {/* TEXTO */}
-              <List
-                sx={{
-                  marginLeft: '-12%'
-                }}
-              >
-                <ListItem disablePadding>
-                  <ListItemText inset primary="Selecione o tipo de óleo e quantidade:" />
-                  {/* <h3>{quantidadeEstoque}</h3> */}
-                </ListItem>
-              </List>
-
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                {/* Contêiner para os botões 'usado' e 'limpo' */}
-                <div id='containerBotoes' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '45%' }}>
-                  {/* BOTÃO ÓLEO LIMPO */}
-                  <div
-                    style={{
-                      marginLeft: '10%',
-                      width: '30%'
-                    }}>
-                    <Button
-                      sx={{
-                        height: '100px',
-                        borderRadius: '20px',
-                        backgroundColor: selectedGroup1 === 'limpo' ? '#YourSelectedColor' : 'transparent'
-                      }}
-                      variant="contained"
-                      onClick={() => {
-                        handleGroup1ButtonClick("limpo")
-                        sessionStorage.setItem('tipoOleo', 'limpo')
-                        recuperaEstabelecimentoEstoque()
-                      }}
-                    >
-                      <img src={limpo} alt="png" style={{ marginRight: 'auto', marginLeft: 'auto', width: '100%' }} />
-                    </Button>
-                    {/* TEXTO */}
-                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                      <div style={{ fontSize: '70%', marginLeft: '2%', marginTop: '5%' }}>limpo</div>
-                    </div>
-                  </div>
-
-                  {/* BOTÃO ÓLEO USADO */}
-                  <div
-                    style={{
-                      marginRight: '15%',
-                      width: '30%'
-                    }}>
-                    <Button
-                      sx={{
-                        height: '100px',
-                        borderRadius: '20px',
-                        backgroundColor: selectedGroup1 === 'usado' ? '#YourSelectedColor' : 'transparent'
-                      }}
-
-                      variant="contained"
-                      onClick={() => {
-                        handleGroup1ButtonClick("usado")
-                        sessionStorage.setItem('tipoOleo', 'usado')
-                        recuperaEstabelecimentoEstoque()
-                      }}
-                    >
-                      <img src={usado} alt="png" style={{ marginRight: 'auto', marginLeft: 'auto', width: '100%' }} />
-                    </Button>
-                    {/* TEXTO */}
-                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                      <div style={{ fontSize: '70%', marginLeft: '2%', marginTop: '5%' }}>usado</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Div 'maisemenos' */}
-                <div id='maisemenos' style={{ marginLeft: '3%', border: '1px solid #000', borderColor: 'grey', padding: '1px', borderRadius: '10px', width: '33%', height: '80px', marginTop: '-3%' }}>
-                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '7%' }}>
-                    {/* BOTÃO - */}
-                    <Button id='button3'
-                      aria-label="reduce"
-                      onClick={() => {
-                        setCount2(Math.max(count2 - 1, 0));
-                      }}
-                    >
-                      {/* <RemoveIcon fontSize="small" /> */}
-                    </Button>
-
-                    {/* NÚMERO CONTAGEM */}
-                    <Badge color="secondary">
-                      <span style={{ fontSize: '24px' }}>{count1}</span>
-                    </Badge>
-
-                    {/* BOTÃO + */}
-                    <Button id='button4'
-                      aria-label="increase"
-                      onClick={() => {
-                        setCount2(count1 + 1);
-                      }}
-                    >
-                      {/* <AddIcon fontSize="small" /> */}
-                    </Button>
-                  </div>
+               
 
                   {/* TEXTO */}
                   <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
@@ -370,6 +258,38 @@ export default function ParTransacao() {
                 </div>
               </div>
             </Grid>
+            {/* DEFINIÇÃO DE QUANTIDADE */}
+            <Grid item xs={6} md={5}>
+              <List
+                sx={{
+                  marginLeft: '12%'
+                }}>
+                <ListItem disablePadding>
+                  <ListItemText inset primary="Quantidade de greenneats:" />
+                </ListItem>
+              </List>
+
+              {/* Div 'maisemenos' */}
+              <div id='maisemenos' style={{ marginLeft: '35%', border: '1px solid #000', borderColor: 'grey', padding: '1px', borderRadius: '10px', width: '33%', height: '80px', marginTop: '5%' }}>
+                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '7%' }}>
+                    
+
+                    {/* NÚMERO CONTAGEM */}
+                    <Badge color="secondary">
+                      <span style={{ fontSize: '24px' }}>{count1}</span>
+                    </Badge>
+
+                    
+                  </div>
+
+                {/* TEXTO */}
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                  <div style={{ fontSize: '70%', marginLeft: '2%' }}>greenneats</div>
+                </div>
+              </div>
+            </Grid>
+
+            
 
 
             {/* BOTÕES DE BAIXO */}
@@ -396,8 +316,8 @@ export default function ParTransacao() {
 
                       {/*BOTÃO TRANSFERIR*/}
                       <Button
-                        variant={selectedButton === "Transação" ? "contained" : "outlined"}
-                        onClick={tranferirOleo}
+                        variant={selectedButton === "transferir" ? "contained" : "outlined"}
+                      // onClick={() => handleButtonClick("transferir")}
                       >
                         transferir
                       </Button>

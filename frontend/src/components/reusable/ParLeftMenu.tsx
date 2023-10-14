@@ -203,18 +203,13 @@ function ParLeftMenu() {
   );
 
   const deslogar = () => {
-    sessionStorage.removeItem("dados_step_1")
-    sessionStorage.removeItem("dados_step_2")
-    sessionStorage.removeItem("dados_step_3")
-    sessionStorage.removeItem("UsuarioLogado")
-    sessionStorage.removeItem("TokenValidaEmail")
-
+    sessionStorage.clear()
     navigate('/')
   }
 
   return (
     <ThemeProvider theme={theme}>
-      <AppBar position="fixed" sx={{ width: "100%" }}>
+      <AppBar position="fixed" sx={{ width: "100%", zIndex: 10}}>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
             <IconButton
@@ -242,7 +237,7 @@ function ParLeftMenu() {
               GREENEAT
             </Typography>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontFamily: 'actor'}}>
-              acesso como parceiro
+              Acessado como: Parceiro
             </Typography>
             <Typography
               variant="body1"
