@@ -2,7 +2,7 @@ import bcrypt from "bcrypt"
 
 export async function SETUsuario(client, usuario) {
   try {
-    await client.connect(); // Conectar ao banco de dados
+    // await client.connect(); // Conectar ao banco de dados
 
     const senhaHash = await bcrypt.hash(usuario.UsuarioSenha, 10);
 

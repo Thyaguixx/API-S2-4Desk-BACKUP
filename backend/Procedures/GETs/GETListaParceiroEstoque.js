@@ -1,7 +1,7 @@
 const { Client } = require('pg');
 
 export async function GETListaParceiroEstoque(client, UsuarioID) {
-  await client.connect();
+  // await client.connect();
 
   try {
     let isSucesso = false;

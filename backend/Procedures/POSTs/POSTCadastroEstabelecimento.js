@@ -2,7 +2,7 @@ import { SETEstabelecimento } from "../SETs/SETEstabelecimento";
 import { SETUsuario } from "../SETs/SETUsuario";
 
 export async function POSTCadastroEstabelecimento(client, usuario, estabelecimento) {
-    await client.connect();
+    // await client.connect();
 
     try {
         let isSucesso = false;

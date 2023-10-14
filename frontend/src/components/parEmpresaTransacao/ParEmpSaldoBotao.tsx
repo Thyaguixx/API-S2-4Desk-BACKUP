@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import { Button, Stack } from '@mui/material';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import ParTransacao from './ParEmpTransacao';
-import ParExtrato from './ParEmpExtrato';
+import ParEmpExtrato from './ParEmpExtrato';
 
 const Item = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -62,7 +62,7 @@ export default function ParEmpSaldoBotao() {
           Extrato
         </Button>
         {selectedButton === "Transação" ? <ParTransacao /> : null}
-        {selectedButton === "Extrato" ? <ParExtrato /> : null}
+        {selectedButton === "Extrato" ? <ParEmpExtrato /> : null}
       </Stack>
     </Box>
     </ThemeProvider>

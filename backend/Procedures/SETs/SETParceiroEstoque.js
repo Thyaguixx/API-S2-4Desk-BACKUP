@@ -1,5 +1,5 @@
 export async function SETParceiroEstoque(client, parceiroEstoque) {
-    await client.connect();
+    // await client.connect();
 
     try {
 

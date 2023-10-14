@@ -7,7 +7,7 @@ export async function processarEstoque(client, usuarioID, estabelecimentoEstoque
   let isSucesso = true;  // Adicionada a variável isSucesso
 
   try {
-    await client.connect();
+    // await client.connect();
 
     let estabelecimentoEstoque = [];
     const estabelecimentoEstoqueJson = ''

@@ -7,51 +7,19 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import axios from 'axios';
+import { useMediaQuery } from '@mui/material';
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.white,
-    color: theme.palette.common.black,
-    textAlign: 'center', // Alinha horizontalmente ao centro
-    verticalAlign: 'middle', // Alinha verticalmente ao centro
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-    textAlign: 'center', // Alinha horizontalmente ao centro
-    verticalAlign: 'middle', // Alinha verticalmente ao centro
-  },
-}));
 
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  '&:last-child td, &:last-child th': {
-    border: 0,
-  },
-}));
-
-function createData(
-  ação: string,
-  data: string,
-  quantidade: string,
-  valor: string,
-  detalhes: string,
-) {
-  return { ação, data, quantidade, valor, detalhes };
+interface HistoricoData {
+  data_transacao: string;
+  quantidade_credito: number;
+  nome_empresa: string;
+  tipo_produto: string;
+  quantidade_produto: string;
 }
 
-const rows = [
-  createData('', '', '', '', ''),
-  createData('', '', '', '', ''),
-  createData('', '', '', '', ''),
-  createData('', '', '', '', ''),
-  createData('', '', '', '', ''),
-  createData('', '', '', '', ''),
-  createData('', '', '', '', ''),
-  createData('', '', '', '', ''),
-];
+
 
 const theme = createTheme({
   palette: {
@@ -65,6 +33,38 @@ const theme = createTheme({
 });
 
 export default function ParEmpExtrato() {
+  const [histData, setHistData] = React.useState<HistoricoData[]>([]);
+  const usuarioLogado = sessionStorage.getItem("UsuarioLogado");
+
+  const recuperarHistoricoOleo = async () => {
+    if (usuarioLogado) {
+      const usuarioJson = JSON.parse(usuarioLogado);
+
+      try {
+        const response = await axios.get(
+          `http://localhost:3001/GETParceiroEmpresaExtrato/${usuarioJson.UsuarioID}`
+        );
+
+        const parceiroEmpresaExtratoArray = JSON.parse(
+          response.data.ParceiroEmpresaExtrato
+        );
+
+        if (Array.isArray(parceiroEmpresaExtratoArray)) {
+          setHistData(parceiroEmpresaExtratoArray);
+          
+        } else {
+          console.log("parceiroEmpresaExtratoArray não é um array ou está vazio.");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  React.useEffect(() => {
+    recuperarHistoricoOleo();
+  }, []);
+
   return (
 
     <ThemeProvider theme={theme}>
@@ -86,38 +86,50 @@ export default function ParEmpExtrato() {
           position: 'fixed',
           top: '45%',
           marginLeft: '1%',
-          width: '70%',
+          width: '63%',
           height: '50%'
         }}
       >
-
-        <TableContainer component={Paper} sx={{ width: '90%' }}>
-          <Table aria-label="customized table">
+       
+     <TableContainer sx={{height:'87%'}}>
+          <Table sx={{ minWidth: 650, height:'100px' }} size="small" aria-label="simple table">
             <TableHead>
               <TableRow>
-                <StyledTableCell>Ação</StyledTableCell>
-                <StyledTableCell align="center">Data</StyledTableCell>
-                <StyledTableCell align="center">Quantidade</StyledTableCell>
-                <StyledTableCell align="center">Valor ($)</StyledTableCell>
-                <StyledTableCell align="center">Detalhes</StyledTableCell>
+                <TableCell align="center">Data da Transação</TableCell>
+                <TableCell align="center">Quantidade de Créditos</TableCell>
+                <TableCell align="center">Nome da Empresa</TableCell>
+                <TableCell align="center">Tipo de óleo</TableCell>
+                <TableCell align="center">Quantidade de óleo (L)</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row, index) => (
-                <StyledTableRow key={index}>
-                  <StyledTableCell component="th" scope="row">
-                    {row.ação}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">{row.data}</StyledTableCell>
-                  <StyledTableCell align="center">{row.quantidade}</StyledTableCell>
-                  <StyledTableCell align="center">{row.valor}</StyledTableCell>
-                  <StyledTableCell align="center">{row.detalhes}</StyledTableCell>
-                </StyledTableRow>
+              {histData.map((historico, index) => (
+                <TableRow key={index}>
+                  <TableCell align="center">
+                    {historico.data_transacao}
+                  </TableCell>
+                  <TableCell align="center">
+                    {historico.quantidade_credito}
+                  </TableCell>
+                  <TableCell align="center">
+                    {historico.nome_empresa}
+                  </TableCell>
+                  <TableCell align="center">
+                    {historico.tipo_produto}
+                  </TableCell>
+                  <TableCell align="center">
+                    {historico.quantidade_produto}
+                  </TableCell>
+                </TableRow>
               ))}
             </TableBody>
           </Table>
-        </TableContainer>
+          </TableContainer>
+          
       </div>
     </ThemeProvider>
   );
 }
+
+
+

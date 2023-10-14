@@ -2,7 +2,7 @@ const { Pool } = require('pg');
 
 // Função para inserir informações na tabela EstabelecimentoEstoque
 export async function SETEstabelecimentoEstoque(client, EstabelecimentoEstoque) {
-  const client = await pool.connect();
+  // const client = await pool.connect();
 
   try {
     const query = `

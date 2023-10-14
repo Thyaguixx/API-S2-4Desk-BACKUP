@@ -8,7 +8,7 @@ export async function POSTEstabelecimentoEmpresa(client, EmpresaNome, UsuarioID,
         mensagensErro: '',
     };
 
-    client.connect();
+    // client.connect();
 
     try {
         // Obter o EstabelecimentoID com base no UsuarioID

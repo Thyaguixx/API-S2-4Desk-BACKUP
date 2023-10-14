@@ -1,7 +1,7 @@
 const { Pool } = require('pg');
 
 export async function SETParceiroCompraCredito(client,ParceiroCompraCredito) {
-    await client.connect();
+    // await client.connect();
     
   try {
     const query = `

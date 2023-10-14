@@ -2,7 +2,7 @@ const { Pool } = require('pg');
 
 // Função para inserir informações na tabela Empresa
 export async function SETEmpresa(client,empresa) {
-await client.connect();
+// await client.connect();
 
   const query = `
     INSERT INTO Empresa (UsuarioID, EmpresaNomeFantasia, EmpresaNomeCompleto, EmpresaResponsavel, EmpresaDataCadastro, EmpresaCNPJ)

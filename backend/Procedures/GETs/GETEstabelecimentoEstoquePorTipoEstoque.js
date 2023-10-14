@@ -1,7 +1,7 @@
 const { Client } = require('pg');
 
 export async function GETEstabelecimentoEstoquePorTipo(client, EstabelecimentoID, EstoqueTipo) {
-  await client.connect();
+  // await client.connect();
 
   try {
 

@@ -2,7 +2,7 @@ import { SETParceiro } from "../SETs/SETParceiro";
 import { SETUsuario } from "../SETs/SETUsuario";
 
 export async function POSTCadastroParceiro(client, usuario, parceiro) {
-    await client.connect();
+    // await client.connect();
 
     try {
         let isSucesso = false;

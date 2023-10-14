@@ -20,6 +20,7 @@ import { GETListaParceiroEstoque } from "../Procedures/GETs/GETListaParceiroEsto
 import { GETEstabelecimentoEstoqueHistorico } from "../Procedures/GETs/GETEstabelecimentoEstoqueHistorico";
 import { GETEstabelecimentoEmpresaExtrato } from "../Procedures/GETs/GETEstabelecimentoEmpresaExtrato";
 import { GETParceiroEstabelecimentoExtrato } from "../Procedures/GETs/GETParceiroEstabelecimentoExtrato";
+import { GETParceiroEmpresaExtrato } from "../Procedures/GETs/GETParceiroEmpresaExtrato";
 
 const client = new Pool({
     user: "postgres",
@@ -35,6 +36,8 @@ const client = new Pool({
 //         rejectUnauthorized: false
 //     }
 // })
+
+client.connect()
 
 const app = express()
 app.use(cors())
@@ -311,6 +314,22 @@ app.get("/GETParceiroEstabelecimentoExtrato/:usuarioID", async (req, res)=>{
         res.send({msg:'GET com sucesso', ParceiroEstabelecimentoExtrato:ParceiroEstabelecimentoExtrato})
       } )
       .catch(error => console.error('Erro ao obter o extrato do parc estab:', error));
+})
+
+app.get("/GETParceiroEmpresaExtrato/:usuarioID", async (req, res)=>{
+
+    const { usuarioID } = req.params
+    
+    GETParceiroEmpresaExtrato(client,usuarioID)
+    
+      .then(parcEmpresaExtrato =>{
+        
+        var ParceiroEmpresaExtrato = JSON.stringify(parcEmpresaExtrato)
+        console.log('Historico parceiro e empresa   '+ ParceiroEmpresaExtrato)
+
+        res.send({msg:'GET com sucesso', ParceiroEmpresaExtrato:ParceiroEmpresaExtrato})
+      } )
+      .catch(error => console.error('Erro ao obter o extrato do parc empresa:', error));
 })
 
 app.listen(3001, () => {

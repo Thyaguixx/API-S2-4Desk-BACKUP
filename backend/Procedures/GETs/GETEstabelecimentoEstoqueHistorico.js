@@ -1,7 +1,7 @@
 const { Client } = require('pg');
 
 export async function GETEstabelecimentoEstoqueHistorico(client, usuarioID) {
-    await client.connect();
+    // await client.connect();
 
     const query = `
       SELECT * FROM historicoestabelecimentoestoque 

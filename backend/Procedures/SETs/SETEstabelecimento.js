@@ -2,7 +2,7 @@ import { Pool } from "pg";
 import prcDebug from "../../debug/PRCDebug";
 
 export async function SETEstabelecimento(client, estabelecimento) {
-    await client.connect()
+    // await client.connect()
 
     try {
 

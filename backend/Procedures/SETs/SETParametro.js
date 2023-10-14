@@ -2,7 +2,7 @@ const { Pool } = require('pg');
 
 
 export async function SETParametro(client,Parametro) {
-await client.connect();
+// await client.connect();
   
   try {
     const query = `

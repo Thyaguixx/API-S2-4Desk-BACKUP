@@ -2,7 +2,7 @@ const { Pool } = require('pg');
 
 // Função para inserir informações na tabela HistoricoProdutoCompra
 export async function SETHistoricoProdutoCompra(client, HistoricoProdutoCompra) {
-    await client.connect();
+    // await client.connect();
   
   try {
     const query = `
