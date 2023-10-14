@@ -17,6 +17,9 @@ import { GETEstabelecimentoByNomeFantasia } from "../Procedures/GETs/GETEstabele
 import { POSTEstabelecimentoEmpresa } from "../Procedures/POSTs/POSTEstabelecimentoEmpresa";
 import { POSTParceiroEmpresa } from "../Procedures/POSTs/POSTHistoricoParceiroEmpresa";
 import { GETListaParceiroEstoque } from "../Procedures/GETs/GETListaParceiroEstoque";
+import { GETEstabelecimentoEstoqueHistorico } from "../Procedures/GETs/GETEstabelecimentoEstoqueHistorico";
+import { GETEstabelecimentoEmpresaExtrato } from "../Procedures/GETs/GETEstabelecimentoEmpresaExtrato";
+import { GETParceiroEstabelecimentoExtrato } from "../Procedures/GETs/GETParceiroEstabelecimentoExtrato";
 
 const client = new Pool({
     user: "postgres",
@@ -262,6 +265,53 @@ app.post("/POSTParceiroEmpresa", async (req, res) => {
 
 })
 
+app.get("/GETEstabelecimentoEstoqueHistorico/:usuarioID", async (req, res)=>{
+
+    const { usuarioID } = req.params
+
+    GETEstabelecimentoEstoqueHistorico(client,usuarioID)
+    
+      .then(estoqueHis =>{
+        
+        var EstabelecimentoEstoqueHist = JSON.stringify(estoqueHis)
+        console.log('Historico   '+EstabelecimentoEstoqueHist)
+
+        res.send({msg:'GET com sucesso', EstabelecimentoEstoqueHist:EstabelecimentoEstoqueHist})
+      } )
+      .catch(error => console.error('Erro ao obter o histórico do estoque:', error));
+})
+
+app.get("/GETEstabelecimentoEmpresaExtrato/:usuarioID", async (req, res)=>{
+
+    const { usuarioID } = req.params
+    
+    GETEstabelecimentoEmpresaExtrato(client,usuarioID)
+    
+      .then(estabEmpresaExtrato =>{
+        
+        var EstabelecimentoEmpresaExtrato = JSON.stringify(estabEmpresaExtrato)
+        console.log('Historico   '+ EstabelecimentoEmpresaExtrato)
+
+        res.send({msg:'GET com sucesso', EstabelecimentoEmpresaExtrato:EstabelecimentoEmpresaExtrato})
+      } )
+      .catch(error => console.error('Erro ao obter o extrato do estab empresa:', error));
+})
+
+app.get("/GETParceiroEstabelecimentoExtrato/:usuarioID", async (req, res)=>{
+
+    const { usuarioID } = req.params
+    
+    GETParceiroEstabelecimentoExtrato(client,usuarioID)
+    
+      .then(parcEstabExtrato =>{
+        
+        var ParceiroEstabelecimentoExtrato = JSON.stringify(parcEstabExtrato)
+        console.log('Historico   '+ ParceiroEstabelecimentoExtrato)
+
+        res.send({msg:'GET com sucesso', ParceiroEstabelecimentoExtrato:ParceiroEstabelecimentoExtrato})
+      } )
+      .catch(error => console.error('Erro ao obter o extrato do parc estab:', error));
+})
 
 app.listen(3001, () => {
     console.log("Servidor rodando!")

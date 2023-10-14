@@ -87,27 +87,24 @@ export default function ParEmpTransacao() {
 
     if (!selectedEmpresa) {
       MyToast.fire({
-        title: 'Erro',
+        title: 'Selecione uma empresa.',
         icon: 'warning',
-        text: 'Selecione uma empresa'
       })
       return;
     }
 
     if (count1===0) {
       MyToast.fire({
-        title: 'Erro',
+        title: 'Quantidade não pode ser zero.',
         icon: 'warning',
-        text: 'Quantidade não pode ser zero.'
       })
       return;
     }
 
     if (!estadoSelecionado) {
       MyToast.fire({
-        title: 'Erro',
+        title: 'Selecione um tipo de óleo.',
         icon: 'warning',
-        text: 'Selecione um tipo de óleo.'
       })
       return;
     }
@@ -116,6 +113,7 @@ export default function ParEmpTransacao() {
       ProdutoQuantidade: count1,
       CreditoQuantidade: count1,
       ProdutoDescricao: 'Óleo ' + estadoSelecionado,
+      Descricao:'Transação entre a empresa Grenneat.',
       Data: new Date().toISOString()
     }
 
@@ -131,17 +129,15 @@ export default function ParEmpTransacao() {
         // LimpaCampos()
         setIsPossible(true)
         MyToast.fire({
-          title: 'Sucesso',
+          title: 'Transação efetuada com sucesso.',
           icon: 'success',
-          text: 'Transação efetuada com sucesso.'
         }).then(() => {
           window.location.reload()
         })
       } else {
         MyToast.fire({
-          title: 'Erro',
+          title: response.data.msg,
           icon: 'warning',
-          text: response.data.msg
         }).then(() => {
           window.location.reload()
         })
