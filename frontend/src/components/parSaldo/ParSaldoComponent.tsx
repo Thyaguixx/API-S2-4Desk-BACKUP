@@ -56,7 +56,7 @@ export default function ParSaldoComponent() {
     <div
       style={{
         position: 'fixed',
-        top: '30%',
+        top: '25%',
         width: '100%',
       }}
     >

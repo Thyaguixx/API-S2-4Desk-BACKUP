@@ -38,7 +38,7 @@ export default function ParSaldoBotao() {
     <div
     style={{
       position: 'fixed',
-      top: '40%',
+      top: '33%',
       width: '100%',
     }}
     >

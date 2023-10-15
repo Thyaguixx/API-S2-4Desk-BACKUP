@@ -67,12 +67,12 @@ export default function EstExtrato() {
     <ThemeProvider theme={theme}>
       <div style={{
         position: 'fixed',
-        top: '44%',
+        top: '38%',
         border: '1px solid #000',
         borderColor: 'grey',
         borderRadius: '10px',
         width: '65%',
-        height: '46%',
+        height: '52%',
         zIndex: 0,
         marginLeft: '0%'
 
@@ -81,10 +81,10 @@ export default function EstExtrato() {
       <div
         style={{
           position: 'fixed',
-          top: '45%',
+          top: '40%',
           marginLeft: '1%',
           width: '63%',
-          height: '50%'
+          height: '55%'
         }}
       >
        

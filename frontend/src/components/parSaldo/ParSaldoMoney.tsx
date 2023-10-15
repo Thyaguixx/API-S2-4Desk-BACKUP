@@ -20,7 +20,7 @@ export default function ParSaldoMoney() {
     <div
     style={{
       position: 'fixed',
-      top: '20%',
+      top: '13%',
       marginLeft: '25%',
       width: '100%',
     }}

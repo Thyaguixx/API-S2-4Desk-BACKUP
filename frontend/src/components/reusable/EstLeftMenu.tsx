@@ -128,7 +128,7 @@ function EstLeftMenu() {
           <List component="div" disablePadding>
             <ListItemButton sx={{ pl: 5 }}>
               <img src={papermoney} alt="png" width="20px" />
-              <ListItemText sx={{ pl: 3 }} primary="Transação" />
+              <ListItemText sx={{ pl: 3 }} primary="Transação" onClick={() => navigate('/estabelecimento-saldo')}/>
             </ListItemButton>
 
             <ListItemButton sx={{ pl: 5 }}>
@@ -151,7 +151,7 @@ function EstLeftMenu() {
           <List component="div" disablePadding>
             <ListItemButton sx={{ pl: 5 }}>
               <img src={cadastro} alt="png" width="20px" />
-              <ListItemText sx={{ pl: 3 }} primary="Cadastrar Óleo" />
+              <ListItemText sx={{ pl: 3 }} primary="Cadastrar Óleo" onClick={() => navigate('/estabelecimento-estoque')}/>
             </ListItemButton>
 
             <ListItemButton sx={{ pl: 5 }}>
