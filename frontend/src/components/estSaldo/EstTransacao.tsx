@@ -79,7 +79,17 @@ export default function EstTransacao() {
   const POSTTransacaoEstabelecimentoEmpresa = async () => {
     // Verifica se uma empresa foi selecionada
     if (!selectedEmpresa) {
-      console.error('Selecione uma empresa.');
+      MyToast.fire({
+        title:'Selecione uma empresa.',
+        icon: 'warning',
+      })
+      return;
+    }
+    if(count1===0){
+      MyToast.fire({
+        title:'Quantidade não pode ser zero.',
+        icon: 'warning',
+      })
       return;
     }
 
@@ -107,9 +117,8 @@ export default function EstTransacao() {
       }else{
         setIsPossible(true)
         MyToast.fire({
-          title:'Erro',
+          title:'Quantidade insuficiente de créditos.',
           icon: 'warning',
-          text:'Quantidade insuficiente de créditos.'
         }).then(()=>{
           window.location.reload()
         })

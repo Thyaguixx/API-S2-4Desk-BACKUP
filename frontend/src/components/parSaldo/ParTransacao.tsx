@@ -116,12 +116,28 @@ export default function ParTransacao() {
   }
 
   const ValidaCampos = () => {
+    const creditoParceiro = sessionStorage.getItem('ParceiroCredito')
+
+    if (creditoParceiro) {
+      const creditoParceiroNumerico = parseInt(creditoParceiro, 10)
+
+      if (count1 > creditoParceiroNumerico) {
+        return { IsSucesso: false, msg: 'Saldo insuficiente.' }
+      }
+    }
+
+    if (sessionStorage.getItem("EstabelecimentoID") === null) {
+      return { IsSucesso: false, msg: 'É necessário selecionar um estabelecimento e um tipo de óleo.' }
+    }
+
     if (count1 === 0) {
       return { IsSucesso: false, msg: 'Quantidade não pode ser zero.' }
     }
     if (count1 > quantidadeEstoque) {
       return { IsSucesso: false, msg: 'Quantidade insuficiente no estoque do estabelecimento.' }
     }
+
+
     return { IsSucesso: true, msg: 'Correto' }
   }
 
@@ -168,7 +184,7 @@ export default function ParTransacao() {
           }).then(() => {
             window.location.reload()
             limparSessao()
-            
+
           })
         }
 
@@ -180,12 +196,6 @@ export default function ParTransacao() {
           })
         }
 
-      } else {
-        MyToast.fire({
-          icon: 'warning',
-          title: 'Selecione um estabelecimento e o tipo de óleo que deseja transferir.',
-          // background: "#90ee90"
-        })
       }
     } else {
       setIsPossible(true)

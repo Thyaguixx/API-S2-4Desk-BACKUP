@@ -49,6 +49,8 @@ export default function ParSaldoComponent() {
     recuperaParceiroCredito()
   }, [])
 
+  sessionStorage.setItem('ParceiroCredito', creditosParceiro.toString())
+  
   return (
 
     <div
