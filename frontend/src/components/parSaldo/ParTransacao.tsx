@@ -37,16 +37,12 @@ export default function ParTransacao() {
   const [estabelecimentos, setEstabelecimentos] = React.useState<{ EstabelecimentoNomeFantasia: string }[]>([]);
   const [selectedEstabelecimento, setSelectedEstabelecimento] = React.useState("");
   const [quantidadeEstoque, setQuantidadeEstoque] = React.useState(0)
-
-  const handleButtonClick = (buttonName: React.SetStateAction<string>) => {
-    setSelectedButton(buttonName);
-  };
-
   const [selectedGroup1, setSelectedGroup1] = React.useState("");
 
   const handleGroup1ButtonClick = (buttonName: React.SetStateAction<string>) => {
     setSelectedGroup1(buttonName);
   };
+
   const theme = createTheme({
     palette: {
       primary: {
@@ -60,6 +56,7 @@ export default function ParTransacao() {
 
   const [count1, setCount1] = React.useState(1);
   const [count2, setCount2] = React.useState(1);
+  const [IsPossible, setIsPossible] = React.useState(false);
 
   const listaEstabelecimentos = async () => {
     try {
@@ -99,65 +96,105 @@ export default function ParTransacao() {
     const tipoOleo = sessionStorage.getItem('tipoOleo')
     const estabelecimentoID = sessionStorage.getItem('EstabelecimentoID')
 
-    const result = await Axios.get(`http://localhost:3001/GETEstabelecimentoEstoquePorTipo/${estabelecimentoID}/${tipoOleo}`)
+    if (estabelecimentoID) {
+      const result = await Axios.get(`http://localhost:3001/GETEstabelecimentoEstoquePorTipo/${estabelecimentoID}/${tipoOleo}`)
 
-    if (result.data.EstabelecimentoEstoque) {
-      const estabEstoque = result.data.EstabelecimentoEstoque
-      sessionStorage.setItem("estabEstoque", JSON.stringify(estabEstoque))
-      setQuantidadeEstoque(estabEstoque.EstabelecimentoEstoqueProdutoQuantidade)
-    }
-
-  }
-
-  const tranferirOleo = async () => {
-    const usuarioJson = sessionStorage.getItem("UsuarioLogado")
-    const estabEstoqueJSON = sessionStorage.getItem("estabEstoque")
-    const estabelecimentoID = sessionStorage.getItem("EstabelecimentoID")
-    const dataAtual = new Date().toLocaleString()
-
-    if (usuarioJson && estabEstoqueJSON && estabelecimentoID) {
-      const usuarioObj = JSON.parse(usuarioJson)
-      const estabEstoqueObj = JSON.parse(estabEstoqueJSON)
-      
-      const transacaoEstabelecimentoParceiro = {
-        TransacaoEstabelecimentoParceiroData: dataAtual,
-        EstabelecimentoEstoqueProdutoDescricao: estabEstoqueObj.EstabelecimentoEstoqueProdutoDescricao,
-        EstabelecimentoEstoqueTipo: estabEstoqueObj.EstabelecimentoEstoqueTipo,
-        EstabelecimentoEstoqueProdutoQuantidade: count1,
-        ParceiroCreditoQuantidade: count1
+      if (result.data.EstabelecimentoEstoque) {
+        const estabEstoque = result.data.EstabelecimentoEstoque
+        sessionStorage.setItem("estabEstoque", JSON.stringify(estabEstoque))
+        setQuantidadeEstoque(estabEstoque.EstabelecimentoEstoqueProdutoQuantidade)
       }
-
-      const resultado = await Axios.post("http://localhost:3001/POSTTransacaoParceiroEstabelecimento", {
-        EstabelecimentoID: estabelecimentoID,
-        EstabelecimentoEstoqueID: estabEstoqueObj.EstabelecimentoEstoqueID,
-        UsuarioID: usuarioObj.UsuarioID,
-        transacaoEstabelecimentoParceiro: transacaoEstabelecimentoParceiro
-      })
-
-      if (resultado.data.Sucesso) {
-        MyToast.fire({
-          icon: 'success',
-          title: resultado.data.msg,
-          // background: "#90ee90"
-        }).then(() => window.location.reload())
-      }
-
-      if (!resultado.data.Sucesso) {
-        MyToast.fire({
-          icon: 'error',
-          title: resultado.data.msg,
-          // background: "#90ee90"
-        })
-      }
-
     } else {
       MyToast.fire({
         icon: 'warning',
-        title: 'Selecione um estabelecimento e o tipo de óleo que deseja transferir.',
-        // background: "#90ee90"
+        title: 'Selecione um estabelecimento.'
       })
+      setSelectedGroup1("")
     }
 
+
+  }
+
+  const ValidaCampos = () => {
+    if (count1 === 0) {
+      return { IsSucesso: false, msg: 'Quantidade não pode ser zero.' }
+    }
+    if (count1 > quantidadeEstoque) {
+      return { IsSucesso: false, msg: 'Quantidade insuficiente no estoque do estabelecimento.' }
+    }
+    return { IsSucesso: true, msg: 'Correto' }
+  }
+
+  const limparSessao = () => {
+    sessionStorage.removeItem('EstabelecimentoID')
+    sessionStorage.removeItem('tipoOleo')
+    sessionStorage.removeItem('estabEstoque')
+  }
+
+  const tranferirOleo = async () => {
+    const retornoValidaCampos = await ValidaCampos()
+
+    if (retornoValidaCampos.IsSucesso) {
+      const usuarioJson = sessionStorage.getItem("UsuarioLogado")
+      const estabEstoqueJSON = sessionStorage.getItem("estabEstoque")
+      const estabelecimentoID = sessionStorage.getItem("EstabelecimentoID")
+      const dataAtual = new Date().toLocaleString()
+
+      if (usuarioJson && estabEstoqueJSON && estabelecimentoID) {
+        const usuarioObj = JSON.parse(usuarioJson)
+        const estabEstoqueObj = JSON.parse(estabEstoqueJSON)
+
+        const transacaoEstabelecimentoParceiro = {
+          TransacaoEstabelecimentoParceiroData: dataAtual,
+          EstabelecimentoEstoqueProdutoDescricao: estabEstoqueObj.EstabelecimentoEstoqueProdutoDescricao,
+          EstabelecimentoEstoqueTipo: estabEstoqueObj.EstabelecimentoEstoqueTipo,
+          EstabelecimentoEstoqueProdutoQuantidade: count1,
+          ParceiroCreditoQuantidade: count1
+        }
+
+        const resultado = await Axios.post("http://localhost:3001/POSTTransacaoParceiroEstabelecimento", {
+          EstabelecimentoID: estabelecimentoID,
+          EstabelecimentoEstoqueID: estabEstoqueObj.EstabelecimentoEstoqueID,
+          UsuarioID: usuarioObj.UsuarioID,
+          transacaoEstabelecimentoParceiro: transacaoEstabelecimentoParceiro
+        })
+
+        if (resultado.data.Sucesso) {
+          setIsPossible(true)
+          MyToast.fire({
+            icon: 'success',
+            title: resultado.data.msg,
+            // background: "#90ee90"
+          }).then(() => {
+            window.location.reload()
+            limparSessao()
+            
+          })
+        }
+
+        if (!resultado.data.Sucesso) {
+          MyToast.fire({
+            icon: 'error',
+            title: resultado.data.msg,
+            // background: "#90ee90"
+          })
+        }
+
+      } else {
+        MyToast.fire({
+          icon: 'warning',
+          title: 'Selecione um estabelecimento e o tipo de óleo que deseja transferir.',
+          // background: "#90ee90"
+        })
+      }
+    } else {
+      setIsPossible(true)
+      MyToast.fire({
+        icon: 'warning',
+        title: retornoValidaCampos.msg,
+        // background: "#90ee90"
+      }).then(() => setIsPossible(false))
+    }
   }
 
   return (
@@ -271,7 +308,7 @@ export default function ParTransacao() {
               >
                 <ListItem disablePadding>
                   <ListItemText inset primary="Selecione o tipo de óleo e quantidade:" />
-                  <h3>{quantidadeEstoque}</h3>
+                  <h3>Quantidade disponível em estoque: {quantidadeEstoque}</h3>
                 </ListItem>
               </List>
 
@@ -387,7 +424,6 @@ export default function ParTransacao() {
                       }}>
                       <Button
                         variant={selectedButton === "cancelar" ? "contained" : "outlined"}
-                      // onClick={() => handleButtonClick("cancelar")}
                       >
                         cancelar
                       </Button>
@@ -397,6 +433,7 @@ export default function ParTransacao() {
                       {/*BOTÃO TRANSFERIR*/}
                       <Button
                         variant={selectedButton === "Transação" ? "contained" : "outlined"}
+                        disabled={IsPossible}
                         onClick={tranferirOleo}
                       >
                         transferir

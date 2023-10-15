@@ -171,7 +171,7 @@ function EstLeftMenu() {
 
   return (
     <ThemeProvider theme={theme}>
-      <AppBar position="fixed" sx={{ width: "100%" }}>
+      <AppBar position="fixed" sx={{ width: "100%", zIndex: 15 }}>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
             <IconButton

@@ -21,12 +21,13 @@ import { GETEstabelecimentoEstoqueHistorico } from "../Procedures/GETs/GETEstabe
 import { GETEstabelecimentoEmpresaExtrato } from "../Procedures/GETs/GETEstabelecimentoEmpresaExtrato";
 import { GETParceiroEstabelecimentoExtrato } from "../Procedures/GETs/GETParceiroEstabelecimentoExtrato";
 import { GETParceiroEmpresaExtrato } from "../Procedures/GETs/GETParceiroEmpresaExtrato";
+import { GETParceiroEstoqueHistorico } from "../Procedures/GETs/GETParceiroEstoqueHistorico";
 
 const client = new Pool({
     user: "postgres",
     host: "localhost",
     database: "API - 4Desk",    //trocar para o nome do seu banco local
-    password: "123",      //trocar para a senha do seu banco local
+    password: "thygas020",      //trocar para a senha do seu banco local
     port: 5432
 })
 
@@ -277,7 +278,7 @@ app.get("/GETEstabelecimentoEstoqueHistorico/:usuarioID", async (req, res)=>{
       .then(estoqueHis =>{
         
         var EstabelecimentoEstoqueHist = JSON.stringify(estoqueHis)
-        console.log('Historico   '+EstabelecimentoEstoqueHist)
+        // console.log('Historico   '+EstabelecimentoEstoqueHist)
 
         res.send({msg:'GET com sucesso', EstabelecimentoEstoqueHist:EstabelecimentoEstoqueHist})
       } )
@@ -293,7 +294,7 @@ app.get("/GETEstabelecimentoEmpresaExtrato/:usuarioID", async (req, res)=>{
       .then(estabEmpresaExtrato =>{
         
         var EstabelecimentoEmpresaExtrato = JSON.stringify(estabEmpresaExtrato)
-        console.log('Historico   '+ EstabelecimentoEmpresaExtrato)
+        // console.log('Historico   '+ EstabelecimentoEmpresaExtrato)
 
         res.send({msg:'GET com sucesso', EstabelecimentoEmpresaExtrato:EstabelecimentoEmpresaExtrato})
       } )
@@ -309,7 +310,7 @@ app.get("/GETParceiroEstabelecimentoExtrato/:usuarioID", async (req, res)=>{
       .then(parcEstabExtrato =>{
         
         var ParceiroEstabelecimentoExtrato = JSON.stringify(parcEstabExtrato)
-        console.log('Historico   '+ ParceiroEstabelecimentoExtrato)
+        // console.log('Historico   '+ ParceiroEstabelecimentoExtrato)
 
         res.send({msg:'GET com sucesso', ParceiroEstabelecimentoExtrato:ParceiroEstabelecimentoExtrato})
       } )
@@ -325,11 +326,27 @@ app.get("/GETParceiroEmpresaExtrato/:usuarioID", async (req, res)=>{
       .then(parcEmpresaExtrato =>{
         
         var ParceiroEmpresaExtrato = JSON.stringify(parcEmpresaExtrato)
-        console.log('Historico parceiro e empresa   '+ ParceiroEmpresaExtrato)
+        // console.log('Historico parceiro e empresa   '+ ParceiroEmpresaExtrato)
 
         res.send({msg:'GET com sucesso', ParceiroEmpresaExtrato:ParceiroEmpresaExtrato})
       } )
       .catch(error => console.error('Erro ao obter o extrato do parc empresa:', error));
+})
+
+app.get("/GETParceiroEstoqueHistorico/:usuarioID", async (req, res)=>{
+
+    const { usuarioID } = req.params
+    
+    GETParceiroEstoqueHistorico(client,usuarioID)
+    
+      .then(parcEstoque =>{
+        
+        var ParceiroEstoque = JSON.stringify(parcEstoque)
+        // console.log('Historico parceiro estoque   '+ ParceiroEstoque)
+
+        res.send({msg:'GET com sucesso', ParceiroEstoque:ParceiroEstoque})
+      } )
+      .catch(error => console.error('Erro ao obter o historico do parceiro:', error));
 })
 
 app.listen(3001, () => {

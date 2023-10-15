@@ -116,9 +116,8 @@ const CadastrarEstoque = async () => {
       setIsPossible(true)
       LimpaCampos()
       MyToast.fire({
-        title:'Sucesso',
+        title:'Quantidade de óleo foi inserida com sucesso.',
         icon: 'success',
-        text:'Quantidade de óleo esta inserida com sucesso.'
       }).then(()=>{
         window.location.reload()
       })
@@ -127,9 +126,8 @@ const CadastrarEstoque = async () => {
 }else{
   setIsPossible(true)
   MyToast.fire({
-    title:'Erro',
+    title:returnValidaCampos.msg,
     icon: 'warning',
-    text: returnValidaCampos.msg
   }).then(()=>{
     setIsPossible(false)
   })

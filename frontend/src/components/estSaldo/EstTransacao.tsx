@@ -86,7 +86,7 @@ export default function EstTransacao() {
     const transacaoEstabelecimentoEmpresa = {
       TransacaoEstabelecimentoEmpresaQuantidade: count1, // Substitua pelo seu valor real
       TransacaoEstabelecimentoEmpresaDescricao: 'Transação', // Atualizado para usar a empresa selecionada
-      TransacaoEstabelecimentoEmpresaData: new Date().toISOString(), // Substitua pelo seu valor real
+      TransacaoEstabelecimentoEmpresaData: new Date().toLocaleString(), // Substitua pelo seu valor real
     };
 
     const response = await Axios.post("http://localhost:3001/POSTEstabelecimentoEmpresa", {
@@ -105,6 +105,7 @@ export default function EstTransacao() {
           window.location.reload()
         })
       }else{
+        setIsPossible(true)
         MyToast.fire({
           title:'Erro',
           icon: 'warning',

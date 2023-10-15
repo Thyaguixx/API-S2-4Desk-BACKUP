@@ -1,3 +1,4 @@
+import { GETParceiroEstoque } from '../GETs/GETParceiroEstoque';
 import { SETParceiroEstoque } from '../SETs/SETParceiroEstoque';
 
 const { Client } = require('pg');
@@ -97,47 +98,43 @@ export async function realizarTransacaoEstabelecimentoParceiro(client, UsuarioID
 
     await client.query(updateCreditoEstabelecimentoQuery);
 
-    const parceiroEstoque = {
-      ParceiroID: parceiroID,
-      ParceiroEstoqueProdutoDescricao: transacaoEstabelecimentoParceiro.EstabelecimentoEstoqueProdutoDescricao,
-      ParceiroEstoqueTipo: transacaoEstabelecimentoParceiro.EstabelecimentoEstoqueTipo,
-      ParceiroEstoqueProdutoQuantidade: transacaoEstabelecimentoParceiro.EstabelecimentoEstoqueProdutoQuantidade
-    }
-
     await client.query('COMMIT');
     console.log('Transação realizada com sucesso.');
 
-    const retorno = await SETParceiroEstoque(client, parceiroEstoque)
-    isSucesso = retorno.isSucesso
+    const retornoParceiroEstoque = await GETParceiroEstoque(client, parceiroID)
+    console.log(JSON.stringify(retornoParceiroEstoque))
+
+    if (!retornoParceiroEstoque.isSucesso) {
+      const parceiroEstoque = {
+        ParceiroID: parceiroID,
+        ParceiroEstoqueProdutoDescricao: transacaoEstabelecimentoParceiro.EstabelecimentoEstoqueProdutoDescricao,
+        ParceiroEstoqueTipo: transacaoEstabelecimentoParceiro.EstabelecimentoEstoqueTipo,
+        ParceiroEstoqueProdutoQuantidade: transacaoEstabelecimentoParceiro.EstabelecimentoEstoqueProdutoQuantidade
+      }
+
+      const retorno = await SETParceiroEstoque(client, parceiroEstoque)
+      isSucesso = retorno.isSucesso
+
+    } else {
+      const parceiroEstoque = {
+        ParceiroEstoqueID: retornoParceiroEstoque.parceiroEstoque.ParceiroEstoqueID,
+        ParceiroID: parceiroID,
+        ParceiroEstoqueProdutoDescricao: transacaoEstabelecimentoParceiro.EstabelecimentoEstoqueProdutoDescricao,
+        ParceiroEstoqueTipo: transacaoEstabelecimentoParceiro.EstabelecimentoEstoqueTipo,
+        ParceiroEstoqueProdutoQuantidade: transacaoEstabelecimentoParceiro.EstabelecimentoEstoqueProdutoQuantidade
+      }
+
+      const retorno = await SETParceiroEstoque(client, parceiroEstoque)
+      isSucesso = retorno.isSucesso
+
+    }
+
 
     return { isSucesso, mensagem: isSucesso ? 'Transação realizada com sucesso.' : 'Erro ao realizar a transação.' };
+
   } catch (error) {
     // Rollback em caso de erro
     await client.query('ROLLBACK');
     console.error('Erro ao realizar a transação:', error);
-   } //finally {
-  //   // Fechar a conexão com o banco de dados
-  //   // await client.end();
-  //   return { isSucesso, mensagem: isSucesso ? 'Transação realizada com sucesso.' : 'Erro ao realizar a transação.' };
-  // }
+  }
 }
-
-// Exemplo de uso
-// const transacaoEstabelecimentoParceiro = {
-//   TransacaoEstabelecimentoParceiroID: 'uuid-gerado-para-a-transacao',
-//   EstabelecimentoEstoqueID: 'uuid-do-estoque-do-estabelecimento',
-//   EstabelecimentoEstoqueProdutoDescricao: 'Descrição do produto',
-//   EstabelecimentoEstoqueTipo: 'Tipo do produto',
-//   EstabelecimentoEstoqueProdutoQuantidade: 10,
-//   ParceiroCreditoQuantidade: 5,
-// };
-
-// const UsuarioID = 'uuid-do-usuario';
-// const EstabelecimentoID = 'uuid-do-estabelecimento';
-
-// realizarTransacaoEstabelecimentoParceiro(
-//   client,
-//   UsuarioID,
-//   EstabelecimentoID,
-//   transacaoEstabelecimentoParceiro
-// );

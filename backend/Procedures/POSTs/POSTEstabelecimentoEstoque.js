@@ -99,7 +99,7 @@ async function adicionarRegistroHistorico(client, EstabelecimentoEstoqueID, Esta
   let LocalERRO = 'INSERT HistoricoEstabelecimentoEstoque';
 
   try {
-    const historicoEstabelecimentoEstoqueData = new Date().toISOString();
+    const historicoEstabelecimentoEstoqueData = new Date().toLocaleString();
     const insertHistoricoQuery = `
       INSERT INTO HistoricoEstabelecimentoEstoque 
       (EstabelecimentoEstoqueID, EstabelecimentoID, HistoricoEstabelecimentoEstoqueData, EstabelecimentoEstoqueProdutoDescricao, EstabelecimentoEstoqueTipo, EstabelecimentoEstoqueProdutoQuantidade)

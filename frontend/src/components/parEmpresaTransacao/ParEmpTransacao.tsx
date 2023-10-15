@@ -114,7 +114,7 @@ export default function ParEmpTransacao() {
       CreditoQuantidade: count1,
       ProdutoDescricao: 'Óleo ' + estadoSelecionado,
       Descricao:'Transação entre a empresa Grenneat.',
-      Data: new Date().toISOString()
+      Data: new Date().toLocaleString()
     }
 
     const response = await Axios.post("http://localhost:3001/POSTParceiroEmpresa", {
@@ -135,6 +135,7 @@ export default function ParEmpTransacao() {
           window.location.reload()
         })
       } else {
+        setIsPossible(true)
         MyToast.fire({
           title: response.data.msg,
           icon: 'warning',

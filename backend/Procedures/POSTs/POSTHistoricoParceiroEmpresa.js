@@ -15,7 +15,7 @@ export async function POSTParceiroEmpresa(client, UsuarioID, ParceiroEstoqueTipo
     };
     const resultEmpresaID = await client.query(empresaidQuery);
     const { empresaid } = resultEmpresaID.rows[0];
-
+    
     LocalERRO = '  SELECT PARCEIROESTOQUEID'
     const estabelecimentoQuery = {
       text: 'SELECT parceiroestoqueid,parceiroestoqueprodutoquantidade FROM ParceiroEstoque WHERE parceiroID IN (SELECT parceiroID FROM parceiro WHERE UsuarioID = $1) AND ParceiroEstoqueTipo = $2',
@@ -25,7 +25,7 @@ export async function POSTParceiroEmpresa(client, UsuarioID, ParceiroEstoqueTipo
     const { parceiroestoqueid, parceiroestoqueprodutoquantidade } = ResultParceiroEstoqueID.rows[0];
 
     if (HistoricoParceiroEmpresa.ProdutoQuantidade > parceiroestoqueprodutoquantidade) {
-      result.message = "A quantidade do produto é maior que a disponível no Estoque";
+      result.message = "A quantidade do óleo é maior que a disponível no estoque";
       result.isSuccess = false
       return result
     }
